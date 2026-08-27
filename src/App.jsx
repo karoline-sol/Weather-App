@@ -1,9 +1,74 @@
+import { useState, useEffect } from "react";
+const API_URL =
+  "https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code&hourly=temperature_2m&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=auto";
+
+const GEO_URL =
+  "https://geocoding-api.open-meteo.com/v1/search";
 
 
 function App() {
+  const [city, setCity] = useState("");
+  const [weather, setWeather] = useState(null);
+  const [location, setLocation] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+  fetch(API_URL)
+    .then((response) => response.json())
+    .then((data) => {
+      setWeather(data);
+    });
+}, []);
+
+
+const handleSearch = () => {
+  if (!city) return;
+
+  fetch(`${GEO_URL}?name=${city}&count=1&language=en&format=json`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (!data.results) {
+        setError("Location not found");
+        return;
+      }
+      
+      setError("");
+
+      const { latitude, longitude } = data.results[0];
+      setLocation(data.results[0].name);
+
+      const weatherURL = `${API_URL}&latitude=${latitude}&longitude=${longitude}`;
+      
+  fetch(weatherURL)
+    .then((response) => response.json())
+    .then((weatherData) => {
+    setWeather(weatherData);
+  
+  });
+    
+  });
+};
+ 
+
+
   return (
    <main className="min-h-screen bg-slate-950 text-white">
 
+   {error && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="rounded-xl bg-slate-800 px-6 py-4 text-center shadow-xl">
+      <p className="text-sm text-red-400">{error}</p>
+      <button
+        className="mt-3 rounded-lg bg-slate-700 px-4 py-2 text-sm hover:bg-slate-600"
+        onClick={() => setError("")}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
+    
 {/* Header */}
     <header className="border-b border-slate-800">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
@@ -17,13 +82,25 @@ function App() {
             <input
               type="text"
               placeholder="Search for a city..."
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch();
+                }
+              }}
+
+              
+
               className="w-full rounded-l-full border border-slate-700 bg-slate-900 px-5 py-3 text-sm outline-none focus:border-blue-400"
             />
 
-            <button className="rounded-r-full bg-blue-600 px-6 hover:bg-blue-500">
+            <button className="rounded-r-full bg-blue-600 px-6 hover:bg-blue-500"
+              onClick={handleSearch}>
               Search
             </button>
-          </div>
+           
+          </div>   
 
         </div>
       </header>
@@ -36,12 +113,13 @@ function App() {
         
          <div>
             <p className="text-sm font-semibold uppercase tracking-widest text-blue-400">
-              Orlando
+              {location}
             </p>
 
             <div className="mt-4 flex items-start">
+              
               <span className="text-8xl font-light">
-                63
+                {weather?.current?.temperature_2m}  
               </span>
 
               <span className="mt-4 text-3xl text-slate-400">
@@ -105,7 +183,7 @@ function App() {
 
 
 {/* Hourly Forecast */}
-        <section className="py-10">
+        <section className="mx-auto max-w-7xl px-6py-10">
 
           <h2 className="mb-5 text-sm font-semibold uppercase tracking-widest text-blue-400">
             Hourly Forecast
@@ -144,7 +222,7 @@ function App() {
 
 
     {/* 5-Day Forecast */}
-        <section>
+        <section className="mx-auto max-w-7xl px-1 py-10">
 
           <h2 className="mb-5 text-sm font-semibold uppercase tracking-widest text-blue-400">
             5-Day Forecast
