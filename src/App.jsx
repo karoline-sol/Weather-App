@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 const API_URL =
-  "https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code&hourly=temperature_2m&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=auto";
+  "https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&hourly=temperature_2m,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&visibility_unit=miles&timezone=auto";
+
 
 const GEO_URL =
   "https://geocoding-api.open-meteo.com/v1/search";
@@ -11,6 +12,8 @@ function App() {
   const [weather, setWeather] = useState(null);
   const [location, setLocation] = useState("");
   const [error, setError] = useState("");
+
+  const currentHour = new Date().getHours();
 
   useEffect(() => {
   fetch(API_URL)
@@ -144,7 +147,7 @@ const handleSearch = () => {
                 Humidity
               </p>
               <p className="mt-2 text-2xl font-semibold">
-                78%
+                {weather?.current?.relative_humidity_2m}%
               </p>
             </div>
 
@@ -153,16 +156,16 @@ const handleSearch = () => {
                 Wind
               </p>
               <p className="mt-2 text-2xl font-semibold">
-                12 mph
+                {weather?.current?.wind_speed_10m} mph
               </p>
             </div>
 
             <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6">
               <p className="text-sm uppercase tracking-wider text-blue-400">
-                Visibility
+                Chance of Rain
               </p>
               <p className="mt-2 text-2xl font-semibold">
-                10 mi
+                {weather?.hourly?.precipitation_probability[currentHour]}%
               </p>
             </div>
 
@@ -171,7 +174,7 @@ const handleSearch = () => {
                 UV Index
               </p>
               <p className="mt-2 text-2xl font-semibold">
-                4
+                {weather?.daily?.uv_index_max?.[0]}
               </p>
             </div>
 
