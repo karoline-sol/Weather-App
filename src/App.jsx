@@ -1,10 +1,28 @@
 import { useState, useEffect } from "react";
 const API_URL =
-  "https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&hourly=temperature_2m,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&visibility_unit=miles&timezone=auto";
+  "https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m,apparent_temperature&hourly=temperature_2m,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto";
 
 
 const GEO_URL =
   "https://geocoding-api.open-meteo.com/v1/search";
+
+
+  function getWeatherDescription(code) {
+  if (code === 0) return "Clear Sky";
+  if (code === 1) return "Mainly Clear";
+  if (code === 2) return "Partly Cloudy";
+  if (code === 3) return "Overcast";
+  if (code >= 51 && code <= 57) return "Drizzle";
+  if (code >= 61 && code <= 67) return "Rain";
+  if (code >= 71 && code <= 77) return "Snow";
+  if (code >= 80 && code <= 82) return "Rain Showers";
+  if (code >= 95) return "Thunderstorm";
+
+  return "Unknown";
+}
+
+
+
 
 
 function App() {
@@ -119,7 +137,18 @@ const handleSearch = () => {
               {location}
             </p>
 
-            <div className="mt-4 flex items-start">
+            <p className="mt-1 text-slate-400">
+              {weather?.current?.time &&
+               new Date(weather.current.time).toLocaleDateString("en-US", {
+               weekday: "long",
+               month: "long",
+               day: "numeric",
+               year: "numeric",
+            
+            })}
+            </p>
+
+            <div className="mt-6 flex items-start">
               
               <span className="text-8xl font-light">
                 {weather?.current?.temperature_2m}  
@@ -130,12 +159,12 @@ const handleSearch = () => {
               </span>
             </div>
 
-            <p className="mt-2 text-2xl text-slate-300">
-              Partly Cloudy
+            <p className="mt-6 text-2xl text-slate-300">
+              {getWeatherDescription(weather?.current?.weather_code)}
             </p>
 
-            <p className="mt-3 text-slate-500" >
-              Feels like 59°
+            <p className="mt-1 text-slate-500" >
+              Feels like {weather?.current?.apparent_temperature}°F
             </p>
           </div>
 
