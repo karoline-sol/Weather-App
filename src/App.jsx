@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 const API_URL =
-  "https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m,apparent_temperature&hourly=temperature_2m,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto";
-
+  "https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m,apparent_temperature&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto";
 
 const GEO_URL =
   "https://geocoding-api.open-meteo.com/v1/search";
@@ -22,6 +21,21 @@ const GEO_URL =
 }
 
 
+function getWeatherIcon(code) {
+  if (code === 0) return "☀️";
+  if (code === 1) return "🌤️";
+  if (code === 2) return "⛅";
+  if (code === 3) return "☁️";
+  if (code >= 51 && code <= 57) return "🌦️";
+  if (code >= 61 && code <= 67) return "🌧️";
+  if (code >= 71 && code <= 77) return "❄️";
+  if (code >= 80 && code <= 82) return "🌦️";
+  if (code >= 95 && code <= 99) return "⛈️";
+
+  return "☀️";
+}
+
+
 
 
 
@@ -33,13 +47,7 @@ function App() {
 
   const currentHour = new Date().getHours();
 
-  useEffect(() => {
-  fetch(API_URL)
-    .then((response) => response.json())
-    .then((data) => {
-      setWeather(data);
-    });
-}, []);
+
 
 
 const handleSearch = () => {
@@ -62,11 +70,11 @@ const handleSearch = () => {
       
   fetch(weatherURL)
     .then((response) => response.json())
-    .then((weatherData) => {
+    .then((weatherData) => { 
     setWeather(weatherData);
-  
+   
   });
-    
+   
   });
 };
  
@@ -223,28 +231,29 @@ const handleSearch = () => {
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
 
-            {[
-              ["9 AM", "☀️", "58°"],
-              ["12 PM", "🌤️", "63°"],
-              ["3 PM", "🌤️", "65°"],
-              ["6 PM", "🌙", "61°"],
-              ["9 PM", "🌙", "56°"],
-              ["12 AM", "🌙", "54°"],
-            ].map(([time, icon, temperature]) => (
+            {weather?.hourly?.time?.slice(currentHour, currentHour + 6).map((time,index) => (
               <div
                 key={time}
                 className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6 text-center"
               >
                 <p className="text-sm text-slate-400">
-                  {time}
+                  {new Date(time).toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "numeric",
+                    hour12: true,
+                  })}
                 </p>
 
                 <p className="my-5 text-3xl">
-                  {icon}
+                  {getWeatherIcon(weather?.hourly?.weather_code?.[index])}
                 </p>
 
                 <p className="text-xl font-semibold">
-                  {temperature}
+                  {weather?.hourly?.temperature_2m[index]}°F
+                </p>
+
+                <p className="mt-2 text-sm text-slate-400">
+                   💧 {weather.hourly.precipitation_probability[index]}%
                 </p>
               </div>
             ))}
