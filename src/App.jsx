@@ -271,39 +271,34 @@ const handleSearch = () => {
 
           <div className="space-y-3">
 
-            {[
-              ["Mon", "🌤️", "Cloudy", "52°", "65°"],
-              ["Tue", "☀️", "Sunny", "54°", "68°"],
-              ["Wed", "🌧️", "Rainy", "50°", "60°"],
-              ["Thu", "☁️", "Cloudy", "49°", "59°"],
-              ["Fri", "🌤️", "Partly Cloudy", "51°", "63°"],
-            ].map(([day, icon, condition, low, high]) => (
-              <div
-                key={day}
+            {weather?.daily?.time?.slice(0, 5).map((date,index) => (
+
+             <div
+                key={date}
                 className="flex items-center justify-between rounded-2xl border border-slate-700 bg-slate-900/60 px-6 py-5"
               >
 
                 <div className="flex items-center gap-5">
                   <span className="w-10 font-semibold">
-                    {day}
+                   {new Date(date).toLocaleDateString("en-US", { weekday: "short" })}
                   </span>
 
                   <span className="text-2xl">
-                    {icon}
+                    {getWeatherIcon(weather?.daily?.weather_code?.[index])}
                   </span>
 
                   <span className="text-slate-400">
-                    {condition}
+                    {weather?.daily?.weather_description?.[index]}
                   </span>
                 </div>
 
                 <div className="flex gap-5">
                   <span className="text-slate-500">
-                    {low}
+                    {weather?.daily?.temperature_2m_min?.[index]}°
                   </span>
 
                   <span className="font-semibold">
-                    {high}
+                    {weather?.daily?.temperature_2m_max?.[index]}°
                   </span>
                 </div>
 
