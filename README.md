@@ -78,7 +78,6 @@ Building this project helped me practice working with React, APIs, and dynamic d
 
 * Fetching and working with data from external APIs
 * Using `useState` to manage application state
-* Using `useEffect` to handle API requests
 * Working with asynchronous JavaScript and promises
 * Using conditional rendering to safely display API data
 * Mapping through API data to create reusable forecast cards
