@@ -2,7 +2,7 @@
 
 A responsive weather application built with React and Tailwind CSS that allows users to search for a city and view current weather conditions, hourly forecasts, and a 5-day forecast.
 
-![Weather App Screenshot] (./assets/weather-app1.png) ![Weather App Screenshot] (./assets/weather-app2.png)
+![Weather App Screenshot](./assets/weather-app1.png) ![Weather App Screenshot](./assets/weather-app2.png)
 
 
 ## Project Goals
