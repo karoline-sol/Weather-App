@@ -102,4 +102,4 @@ Building this project helped me practice working with React, APIs, and dynamic d
 
 ## Live Demo 
 
-
+[View the Weather App](https://karoline-sol.github.io/weather-app/)

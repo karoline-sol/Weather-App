@@ -67,8 +67,9 @@ const handleSearch = () => {
       setLocation(data.results[0].name);
 
       const weatherURL = `${API_URL}&latitude=${latitude}&longitude=${longitude}`;
-      
-  fetch(weatherURL)
+      console.log("Weather URL:", weatherURL); // Log the weather URL for debugging
+  
+    fetch(weatherURL)
     .then((response) => response.json())
     .then((weatherData) => { 
     setWeather(weatherData);
